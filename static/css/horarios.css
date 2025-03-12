@@ -1,0 +1,283 @@
+/* Estilos específicos para la página de Horarios */
+
+body {
+    background-color: #f4f7f6;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Contenedor de la sección de horarios */
+.horarios-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+/* Mejoras en la tabla de horarios */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.horarios-section .data-table {
+    width: 100%;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.horarios-section .data-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e1e6e4;
+}
+
+.horarios-section .data-table th {
+    background-color: #f4f6f9;
+    color: #2c3e50;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    padding: 15px;
+    font-weight: 600;
+}
+
+.horarios-section .data-table td {
+    vertical-align: middle;
+    padding: 15px;
+    border-bottom: 1px solid #e1e6e4;
+}
+
+/* Acciones y botones */
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Estilo para los botones de acción */
+.horarios-section .btn-edit,
+.horarios-section .btn-delete {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.horarios-section .btn-edit {
+    background-color: #3498db;
+    color: white;
+    border: 1px solid #3498db;
+}
+
+.horarios-section .btn-delete {
+    background-color: #e74c3c;
+    color: white;
+    border: 1px solid #e74c3c;
+}
+
+.horarios-section .btn-edit:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.horarios-section .btn-delete:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Modal de nuevo horario */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 700px;
+    width: 90%;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #7f8c8d;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #2c3e50;
+}
+
+/* Estilo para el grupo de días laborales */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    background-color: #f4f6f9;
+    padding: 10px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.checkbox-group label:hover {
+    background-color: #e0e4e9;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: #3498db;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Estilo para cuando no hay horarios */
+.horarios-section .no-horarios {
+    text-align: center;
+    color: #7f8c8d;
+    padding: 25px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px dashed #e1e6e4;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .checkbox-group {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .horarios-section {
+        padding: 15px;
+    }
+
+    .horarios-section .data-table {
+        font-size: 0.9rem;
+    }
+
+    .horarios-section .data-table thead {
+        display: none;
+    }
+
+    .horarios-section .data-table tr {
+        display: block;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    .horarios-section .data-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .horarios-section .data-table td:last-child {
+        border-bottom: none;
+    }
+
+    .horarios-section .data-table td::before {
+        content: attr(data-title);
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .action-buttons {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .checkbox-group {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+
+    .horarios-section .btn-edit,
+    .horarios-section .btn-delete {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .horarios-section .data-table {
+        font-size: 0.8rem;
+    }
+
+    .checkbox-group {
+        grid-template-columns: 1fr;
+    }
+
+    .horarios-section .btn-edit,
+    .horarios-section .btn-delete {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+}

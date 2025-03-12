@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistema de Control de Asistencia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo">
+                <h1>CONTROL DE ASISTENCIA</h1>
+            </div>
+            
+            <div class="login-form">
+                <h2>Iniciar Sesión</h2>
+                
+                {% if error %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                </div>
+                {% endif %}
+                
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="flash-message">
+                            <i class="fas fa-info-circle"></i> {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-user icon-left"></i>
+                            <input type="text" id="username" name="username" placeholder="Usuario" required autocomplete="off">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock icon-left"></i>
+                            <input type="password" id="password" name="password" placeholder="Contraseña" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                </form>
+            </div>
+            
+            <div class="login-footer">
+                <p>© {{ now.year }} Sistema de Control de Asistencia</p>
+            </div>
+        </div>
+    </div>
+    
+    {% if first_run %}
+    <!-- Modal para primera configuración -->
+    <div class="modal-overlay" id="first-run-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Configuración Inicial</h2>
+                <button class="close-button" id="close-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Bienvenido al Sistema de Control de Asistencia. Por favor, configure el usuario administrador inicial.</p>
+                
+                <form method="POST" action="{{ url_for('primera_configuracion') }}" id="form-primera-config">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="input-with-icon">
+                                <i class="fas fa-user icon-left"></i>
+                                <input type="text" id="config-username" name="username" placeholder="Usuario" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock icon-left"></i>
+                                <input type="password" id="config-password" name="password" placeholder="Contraseña" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group col-md-6">
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock icon-left"></i>
+                                <input type="password" id="config-confirm-password" name="confirm_password" placeholder="Confirmar Contraseña" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <div class="input-with-icon">
+                                <i class="fas fa-user-tag icon-left"></i>
+                                <input type="text" id="config-nombre" name="nombre" placeholder="Nombre" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group col-md-6">
+                            <div class="input-with-icon">
+                                <i class="fas fa-user-tag icon-left"></i>
+                                <input type="text" id="config-apellido" name="apellido" placeholder="Apellido" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope icon-left"></i>
+                            <input type="email" id="config-email" name="email" placeholder="Correo Electrónico" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

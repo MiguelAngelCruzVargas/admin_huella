@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencias - Sistema de Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/asistencias.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar / Menú lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-logo">
+                <h2>Sistema de Control</h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <h3>{{ session['nombre'] }} {{ session['apellido'] }}</h3>
+                    <p>{{ session['role']|title }}</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('empleados') }}">
+                            <i class="fas fa-users"></i>
+                            <span>Empleados</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('horarios') }}">
+                            <i class="fas fa-clock"></i>
+                            <span>Horarios</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="{{ url_for('asistencias') }}">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Asistencias</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('reportes') }}">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Reportes</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <header>
+                <h1>Registro de Asistencias</h1>
+                <div class="user-info">
+                    <span>{{ session['nombre'] }} {{ session['apellido'] }}</span>
+                    <span class="role">{{ session['role'] }}</span>
+                </div>
+            </header>
+
+            <!-- Filtros y Acciones -->
+            <section class="asistencias-filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="fecha-filtro">Fecha:</label>
+                        <input type="date" id="fecha-filtro" name="fecha">
+                    </div>
+                    <div class="filter-group">
+                        <label for="departamento-filtro">Departamento:</label>
+                        <select id="departamento-filtro" name="departamento">
+                            <option value="">Todos los Departamentos</option>
+                            {% for departamento in departamentos %}
+                            <option value="{{ departamento._id }}">{{ departamento.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="estatus-filtro">Estatus:</label>
+                        <select id="estatus-filtro" name="estatus">
+                            <option value="">Todos los Estatus</option>
+                            <option value="NORMAL">Normal</option>
+                            <option value="RETARDO">Retardo</option>
+                            <option value="FALTA">Falta</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="aplicar-filtros" class="btn btn-primary">
+                            <i class="fas fa-filter mr-2"></i>Aplicar Filtros
+                        </button>
+                        <button id="limpiar-filtros" class="btn btn-secondary">
+                            <i class="fas fa-undo mr-2"></i>Limpiar
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabla de Asistencias -->
+            <section class="asistencias-table">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Empleado</th>
+                                <th>Departamento</th>
+                                <th>Hora Entrada</th>
+                                <th>Hora Salida</th>
+                                <th>Estatus</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asistencia in asistencias %}
+                            <tr>
+                                <td data-title="Fecha">{{ asistencia.fecha_entrada.strftime('%Y-%m-%d') if asistencia.fecha_entrada else 'N/A' }}</td>
+                                <td data-title="Empleado">
+                                    {% if asistencia.empleado %}
+                                        {{ asistencia.empleado.nombre }} {{ asistencia.empleado.apellidos }}
+                                    {% else %}
+                                        Empleado no identificado
+                                    {% endif %}
+                                </td>
+                                <td data-title="Departamento">
+                                    {% if asistencia.empleado and asistencia.empleado.departamento %}
+                                        {{ asistencia.empleado.departamento }}
+                                    {% else %}
+                                        Sin departamento
+                                    {% endif %}
+                                </td>
+                                <td data-title="Hora Entrada">{{ asistencia.fecha_entrada.strftime('%H:%M:%S') if asistencia.fecha_entrada else 'N/A' }}</td>
+                                <td data-title="Hora Salida">{{ asistencia.fecha_salida.strftime('%H:%M:%S') if asistencia.fecha_salida else 'Pendiente' }}</td>
+                                <td data-title="Estatus">
+                                    <span class="badge 
+                                        {% if asistencia.estatus == 'NORMAL' %}badge-success
+                                        {% elif asistencia.estatus == 'RETARDO' %}badge-warning
+                                        {% elif asistencia.estatus == 'FALTA' %}badge-danger
+                                        {% else %}badge-info{% endif %}">
+                                        {{ asistencia.estatus }}
+                                    </span>
+                                </td>
+                                <td data-title="Acciones">
+                                    <div class="action-buttons">
+                                        <button class="btn btn-view" data-id="{{ asistencia._id }}">
+                                            <i class="fas fa-eye"></i> Ver Detalles
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Paginación -->
+                <div class="pagination">
+                    <button id="prev-page" class="btn btn-secondary">
+                        <i class="fas fa-chevron-left mr-2"></i>Anterior
+                    </button>
+                    <span id="page-info">Página 1 de 10</span>
+                    <button id="next-page" class="btn btn-secondary">
+                        Siguiente<i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Modal de Detalles de Asistencia -->
+            <div id="detalles-asistencia-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Detalles de Asistencia</h2>
+                        <button class="modal-close" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="detalles-contenido">
+                        <!-- Contenido dinámico se insertará aquí -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/asistencias.js') }}"></script>
+</body>
+</html>

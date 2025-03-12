@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados - Sistema de Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/empleados.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar / Menú lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="sidebar-logo">
+                <h2>Sistema de Control</h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <h3>{{ session['nombre'] }} {{ session['apellido'] }}</h3>
+                    <p>{{ session['role']|title }}</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="{{ url_for('empleados') }}">
+                            <i class="fas fa-users"></i>
+                            <span>Empleados</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('horarios') }}">
+                            <i class="fas fa-clock"></i>
+                            <span>Horarios</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('asistencias') }}">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Asistencias</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('reportes') }}">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Reportes</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <header>
+                <h1>Gestión de Empleados</h1>
+                <div class="user-info">
+                    <span>{{ session['nombre'] }} {{ session['apellido'] }}</span>
+                    <span class="role">{{ session['role'] }}</span>
+                </div>
+            </header>
+
+            <!-- Filtros y Acciones -->
+            <section class="empleados-filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="nombre-filtro">Nombre</label>
+                        <input type="text" id="nombre-filtro" placeholder="Buscar por nombre">
+                    </div>
+                    <div class="filter-group">
+                        <label for="departamento-filtro">Departamento</label>
+                        <select id="departamento-filtro">
+                            <option value="">Todos los Departamentos</option>
+                            {% for departamento in departamentos %}
+                            <option value="{{ departamento._id }}">{{ departamento.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="estatus-filtro">Estatus</label>
+                        <select id="estatus-filtro">
+                            <option value="">Todos los Estatus</option>
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="aplicar-filtros" class="btn btn-primary">
+                            <i class="fas fa-filter mr-2"></i>Aplicar Filtros
+                        </button>
+                        <button id="nuevo-empleado" class="btn btn-success" data-modal="new-empleado">
+                            <i class="fas fa-plus mr-2"></i>Nuevo Empleado
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabla de Empleados -->
+            <section class="empleados-table">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nombre</th>
+                            <th>Departamento</th>
+                            <th>Puesto</th>
+                            <th>Horario</th>
+                            <th>Estatus</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for empleado in empleados %}
+                        <tr>
+                            <td>
+                                <img src="{{ url_for('static', filename='img/empleados/' + empleado.foto) if empleado.foto else url_for('static', filename='img/default-avatar.png') }}"
+                                    alt="Foto de {{ empleado.nombre }}" class="empleado-foto">
+                            </td>
+                            <td data-title="Nombre">{{ empleado.nombre }} {{ empleado.apellidos }}</td>
+<td data-title="Departamento">{{ empleado.departamento }}</td>
+                            <td>{{ empleado.puesto }}</td>
+                            <td>{{ empleado.horario.nombre if empleado.horario else 'Sin horario' }}</td>
+                            <td>
+                                <span class="badge {% if empleado.activo %}badge-success{% else %}badge-danger{% endif %}">
+                                    {{ 'Activo' if empleado.activo else 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-edit" data-id="{{ empleado._id }}">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="btn btn-view" data-id="{{ empleado._id }}">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Paginación -->
+                <div class="pagination">
+                    <button id="prev-page" class="btn btn-secondary">
+                        <i class="fas fa-chevron-left mr-2"></i>Anterior
+                    </button>
+                    <span id="page-info">Página 1 de 10</span>
+                    <button id="next-page" class="btn btn-secondary">
+                        Siguiente<i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Modal de Nuevo Empleado -->
+            <div id="new-empleado-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Registrar Nuevo Empleado</h2>
+                    <form id="nuevo-empleado-form" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nombre">Nombre</label>
+                                <input type="text" id="nombre" name="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="apellidos">Apellidos</label>
+                                <input type="text" id="apellidos" name="apellidos" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="rfc">RFC</label>
+                                <input type="text" id="rfc" name="rfc" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="curp">CURP</label>
+                                <input type="text" id="curp" name="curp" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="departamento">Departamento</label>
+                                <select id="departamento" name="departamento" required>
+                                    <option value="">Seleccionar Departamento</option>
+                                    {% for departamento in departamentos %}
+                                    <option value="{{ departamento._id }}">{{ departamento.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="horario">Horario</label>
+                                <select id="horario" name="horario" required>
+                                    <option value="">Seleccionar Horario</option>
+                                    {% for horario in horarios %}
+                                    <option value="{{ horario._id }}">{{ horario.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fecha_ingreso">Fecha de Ingreso</label>
+                                <input type="date" id="fecha_ingreso" name="fecha_ingreso" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="foto">Foto de Perfil</label>
+                                <input type="file" id="foto" name="foto" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save mr-2"></i>Guardar Empleado
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelar-nuevo-empleado">
+                                <i class="fas fa-times mr-2"></i>Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/emplados.js') }}"></script>
+</body>
+</html>
